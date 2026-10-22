@@ -36,14 +36,24 @@ h1 em{font-weight:normal;color:#d48da2}
 .btn:hover{transform:translateY(-2px);box-shadow:0 7px 18px #9b566b22}
 .note{display:none;margin:20px auto 0;padding:18px;background:#fff;border-radius:16px;max-width:580px;line-height:1.8;animation:appear .5s ease}
 .lock-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:20px}
-.lock-card{border:1px solid var(--line);border-radius:18px;padding:22px 14px;background:#fff9f8}
+.lock-card{border:1px solid var(--line);border-radius:18px;background:#fff9f8;overflow:hidden}
+.gift-trigger{display:flex;flex-direction:column;align-items:center;width:100%;border:0;background:transparent;color:inherit;padding:22px 14px;text-align:center;transition:background .2s}
+.gift-trigger:not(:disabled):hover{background:#fff}
+.gift-trigger:focus-visible{outline:3px solid #c77f96;outline-offset:-4px;border-radius:18px}
+.gift-trigger:disabled{cursor:not-allowed;opacity:.78}
 .lock-icon{font-size:27px;display:block;margin-bottom:9px}
-.lock-card h3{font-weight:normal;font-size:20px;margin:0 0 7px;color:#9c5b70}
-.lock-card p{font:12px/1.6 Arial,sans-serif;color:#a07c88;margin:0}
+.gift-title{font-weight:normal;font-size:20px;margin:0 0 7px;color:#9c5b70}
+.gift-description{font:12px/1.6 Arial,sans-serif;color:#a07c88;margin:0}
 .lock-label{display:inline-block;margin-top:13px;font:10px Arial,sans-serif;letter-spacing:.12em;text-transform:uppercase;background:#f7e7ec;padding:7px 10px;border-radius:99px;color:#9c5b70}
+.gift-reveal{display:none;margin:0 14px 18px;padding:16px;background:#fff;border:1px solid #f0d8df;border-radius:14px;color:var(--ink);font:15px/1.8 Georgia,"Times New Roman",serif;animation:appear .5s ease}
 .footer{text-align:center;color:#a7808d;font:12px/1.8 Arial,sans-serif;margin-top:35px}
 .floating-heart{position:fixed;bottom:-40px;color:#d88fa5;opacity:.25;pointer-events:none;z-index:0;animation:floatUp linear forwards}
 .music-status{font:12px Arial,sans-serif;color:#a7808d;margin-top:10px}
+.music-player{width:min(560px,100%);height:152px;margin:20px auto 0;border-radius:16px;overflow:hidden;box-shadow:0 12px 30px #a45f7420}
+.music-player[hidden]{display:none}
+.music-player iframe{display:block;width:100%;height:100%;border:0}
+.music-hint{font:12px/1.6 Arial,sans-serif;color:#a7808d;margin:10px auto 0}
+.music-hint[hidden]{display:none}
 @keyframes floatUp{to{transform:translateY(-110vh) rotate(25deg);opacity:0}}
 @keyframes heartbeat{0%,100%{transform:scale(1)}15%{transform:scale(1.12)}30%{transform:scale(1)}45%{transform:scale(1.08)}}
 @keyframes appear{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
@@ -79,8 +89,10 @@ h1 em{font-weight:normal;color:#d48da2}
     <p id="countdownMessage">Chaque seconde nous rapproche de notre jolie journée. ♡</p>
     <div class="btnrow">
       <button class="btn primary" id="letterBtn">Un petit mot pour toi ♡</button>
-      <button class="btn" id="musicBtn" aria-pressed="false">♫ Lancer notre mélodie</button>
+      <button class="btn" id="musicBtn" aria-pressed="false" aria-controls="musicPlayer">♫ Lancer Ordinary — Alex Warren</button>
     </div>
+    <div class="music-player" id="musicPlayer" hidden></div>
+    <p class="music-hint" id="musicHint" hidden>Si la lecture ne démarre pas, utilise ▶ dans le lecteur ou <a href="https://open.spotify.com/track/1NFen1fEOJC1fRFAqIx9Pp" target="_blank" rel="noopener noreferrer">ouvre Ordinary sur Spotify</a>.</p>
     <div class="note" id="letterNote">Valentine, si tu es ici, c'est que tu as suivi le petit lien que je t'ai envoyé. Je voulais simplement te rappeler que je suis heureux de partager tous ces moments avec toi. Le 30 octobre, on aura encore une belle raison d'être ensemble. En attendant, garde un peu de curiosité… je t'aime. ♡</div>
   </section>
 
@@ -89,16 +101,26 @@ h1 em{font-weight:normal;color:#d48da2}
     <p>Pour l'instant, elles gardent leurs secrets. Reviens le 30 octobre pour découvrir la suite. ♡</p>
     <div class="lock-grid">
       <div class="lock-card">
-        <span class="lock-icon">♡</span>
-        <h3>Nous deux</h3>
-        <p>Un souvenir à garder tout près de nous.</p>
-        <span class="lock-label" id="anniversaryStatus">Verrouillé jusqu'au 30 octobre</span>
+        <button class="gift-trigger" id="anniversaryBtn" type="button" disabled aria-expanded="false" aria-controls="anniversaryGift">
+          <span class="lock-icon" aria-hidden="true">♡</span>
+          <span class="gift-title">Nous deux</span>
+          <span class="gift-description">Un souvenir à garder tout près de nous.</span>
+          <span class="lock-label" id="anniversaryStatus">Verrouillé jusqu'au 30 octobre</span>
+        </button>
+        <div class="gift-reveal" id="anniversaryGift" aria-hidden="true">
+          <p>Pour nos trois ans, on va créer un moulage de nos mains dans le plâtre, pour garder un souvenir de nous deux tout près de nous. ♡</p>
+        </div>
       </div>
       <div class="lock-card">
-        <span class="lock-icon">✧</span>
-        <h3>Rien que pour toi</h3>
-        <p>Une surprise pour célébrer la personne que tu es.</p>
-        <span class="lock-label" id="birthdayStatus">Verrouillé jusqu'au 30 octobre</span>
+        <button class="gift-trigger" id="birthdayBtn" type="button" disabled aria-expanded="false" aria-controls="birthdayGift">
+          <span class="lock-icon" aria-hidden="true">✧</span>
+          <span class="gift-title">Rien que pour toi</span>
+          <span class="gift-description">Une surprise pour célébrer la personne que tu es.</span>
+          <span class="lock-label" id="birthdayStatus">Verrouillé jusqu'au 30 octobre</span>
+        </button>
+        <div class="gift-reveal" id="birthdayGift" aria-hidden="true">
+          <p>Dans la boîte, un petit compagnon tout doux aux piquants tout tendres t'attend… Il y aura aussi de quoi construire et décorer une maison en pain d'épices, puis savourer des roulés à la cannelle et des biscuits à l'avoine et au chocolat. Un petit kit rempli de tes favoris, rien que pour toi. Joyeux anniversaire, mon p'tit cœur ! ♡</p>
+        </div>
       </div>
     </div>
     <div class="note" id="unlockedNote">C'est le grand jour, Valentine ! Joyeux anniversaire et joyeux trois ans à nous deux. ♡ Les surprises sont enfin à découvrir… Je t'aime très fort.</div>
@@ -109,13 +131,19 @@ h1 em{font-weight:normal;color:#d48da2}
 <script>
 const target = new Date(2026, 9, 30, 0, 0, 0); // date locale : 30 octobre 2026
 const $ = id => document.getElementById(id);
+const gifts = [
+  {button:'anniversaryBtn',status:'anniversaryStatus',content:'anniversaryGift'},
+  {button:'birthdayBtn',status:'birthdayStatus',content:'birthdayGift'}
+];
 function updateCountdown(){
   const diff = target.getTime() - Date.now();
   if(diff <= 0){
     ['days','hours','minutes','seconds'].forEach(id => $(id).textContent='00');
-    $('countdownMessage').textContent='C’est aujourd’hui ! Joyeux anniversaire et joyeux trois ans à nous deux. ♡';
-    $('anniversaryStatus').textContent='Ouvert ♡';
-    $('birthdayStatus').textContent='Ouvert ♡';
+    $('countdownMessage').textContent='C’est le grand jour ! Clique sur les cases pour découvrir tes surprises. ♡';
+    gifts.forEach(gift=>{
+      $(gift.button).disabled=false;
+      $(gift.status).textContent=$(gift.button).getAttribute('aria-expanded')==='true'?'Refermer ♡':'Cliquer pour découvrir ♡';
+    });
     $('unlockedNote').style.display='block';
     return;
   }
@@ -125,41 +153,49 @@ function updateCountdown(){
   $('seconds').textContent=Math.floor(diff%60000/1000).toString().padStart(2,'0');
 }
 updateCountdown(); setInterval(updateCountdown,1000);
+gifts.forEach(gift=>$(gift.button).addEventListener('click',()=>{
+  const button=$(gift.button), content=$(gift.content);
+  const isOpen=button.getAttribute('aria-expanded')==='true';
+  button.setAttribute('aria-expanded',String(!isOpen));
+  content.style.display=isOpen?'none':'block';
+  content.setAttribute('aria-hidden',String(isOpen));
+  $(gift.status).textContent=isOpen?'Cliquer pour découvrir ♡':'Refermer ♡';
+}));
 $('letterBtn').addEventListener('click',()=>{
   const n=$('letterNote'); n.style.display=n.style.display==='block'?'none':'block';
   $('letterBtn').textContent=n.style.display==='block'?'Refermer mon petit mot ♡':'Un petit mot pour toi ♡';
 });
-let audioCtx=null, oscillators=[], playing=false, melodyTimer=null, noteIndex=0;
-const melody=[392,440,523.25,440,349.23,392,440,392,329.63,392,440,523.25,493.88,440,392,349.23];
-function playNote(freq,when,duration){
-  const osc=audioCtx.createOscillator(), gain=audioCtx.createGain();
-  osc.type='sine'; osc.frequency.value=freq;
-  gain.gain.setValueAtTime(0.0001,when);
-  gain.gain.exponentialRampToValueAtTime(0.075,when+0.04);
-  gain.gain.exponentialRampToValueAtTime(0.0001,when+duration);
-  osc.connect(gain); gain.connect(audioCtx.destination); osc.start(when); osc.stop(when+duration+0.03);
+let spotifyController=null, spotifyPlayPending=false, musicPlaying=false;
+function updateMusicButton(isPlaying){
+  musicPlaying=isPlaying;
+  $('musicBtn').textContent=isPlaying?'Ⅱ Mettre Ordinary en pause':'♫ Lancer Ordinary — Alex Warren';
+  $('musicBtn').setAttribute('aria-pressed',String(isPlaying));
 }
-function startMelody(){
-  audioCtx = audioCtx || new (window.AudioContext||window.webkitAudioContext)();
-  if(audioCtx.state==='suspended') audioCtx.resume();
-  playing=true; $('musicBtn').textContent='Ⅱ Mettre la mélodie en pause'; $('musicBtn').setAttribute('aria-pressed','true');
-  $('musicStatus').textContent='La mélodie joue doucement ♡';
-  function tick(){
-    if(!playing)return;
-    const now=audioCtx.currentTime;
-    playNote(melody[noteIndex%melody.length],now,0.48);
-    if(noteIndex%4===0) playNote(melody[(noteIndex+4)%melody.length]/2,now,0.72);
-    noteIndex++;
-    melodyTimer=setTimeout(tick,520);
+window.onSpotifyIframeApiReady=IFrameAPI=>{
+  IFrameAPI.createController($('musicPlayer'),{
+    uri:'spotify:track:1NFen1fEOJC1fRFAqIx9Pp',width:'100%',height:152
+  },controller=>{
+    spotifyController=controller;
+    controller.addListener('playback_started',()=>updateMusicButton(true));
+    controller.addListener('playback_update',event=>updateMusicButton(!event.data.isPaused));
+    if(spotifyPlayPending){spotifyPlayPending=false;controller.play();}
+  });
+};
+const spotifyApi=document.createElement('script');
+spotifyApi.src='https://open.spotify.com/embed/iframe-api/v1';
+spotifyApi.async=true;
+document.body.appendChild(spotifyApi);
+$('musicBtn').addEventListener('click',()=>{
+  $('musicPlayer').hidden=false;
+  $('musicHint').hidden=false;
+  if(!spotifyController){
+    spotifyPlayPending=true;
+    $('musicBtn').textContent='♫ Préparation de Ordinary…';
+    return;
   }
-  tick();
-}
-function stopMelody(){
-  playing=false; clearTimeout(melodyTimer);
-  $('musicBtn').textContent='♫ Reprendre notre mélodie'; $('musicBtn').setAttribute('aria-pressed','false');
-  $('musicStatus').textContent='La mélodie est en pause.';
-}
-$('musicBtn').addEventListener('click',()=>playing?stopMelody():startMelody());
+  if(musicPlaying) spotifyController.pause();
+  else spotifyController.play();
+});
 // Load a personal photo if images/nous.jpg is added beside this file.
 const img=new Image();
 img.onload=()=>{const area=$('photoArea');area.innerHTML='';area.style.padding='0';area.style.background='white';const image=document.createElement('img');image.src='images/nous.jpg';image.alt='Une photo de nous deux';image.style.width='100%';image.style.height='100%';image.style.objectFit='cover';area.appendChild(image);};
